@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.printer.vendor.model.ReceiptRequest
 
 class PrinterRemoteService : Service() {
 
@@ -14,13 +15,18 @@ class PrinterRemoteService : Service() {
             return true
         }
 
-        override fun printReceipt(text: String) {
-            // Here vendor app sends data to physical printer
-            Log.d("PrinterRemoteService", "Printing receipt: $text")
 
-            // Example:
-            // bluetoothPrinter.print(text)
-            // wifiPrinter.print(text)
+        override fun printReceipt(request: ReceiptRequest) {
+            Log.d("PrinterRemoteService", "Receipt No: ${request.receiptNo}")
+            Log.d("PrinterRemoteService", "Customer: ${request.customerName}")
+            Log.d("PrinterRemoteService", "Total: ${request.totalAmount}")
+
+            request.lines.forEach {
+                Log.d("PrinterRemoteService", "Line: $it")
+            }
+
+            // Real printer logic here
+            // printer.printText(...)
         }
     }
 
@@ -58,7 +64,7 @@ class PrinterRemoteService : Service() {
  *   // SERVER side (your Service)
  *   private val binder = object : IPrinterService.Stub() {
  *       override fun isPrinterConnected(): Boolean = true
- *       override fun printReceipt(text: String) { println(text) }
+ *       override fun printReceipt(request: ReceiptRequest) { println(request.receiptNo) }
  *   }
  *
  *   The () matters
